@@ -1,0 +1,317 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+    <main class="container">
+        <nav class="navbar">
+            <ul class="nav-wrapper">
+                <li class="nav-item active">Input File</li>
+                <li class="nav-item">Read File</li>
+                <li class="nav-item">Akurasi</li>
+                 <!-- <li class="nav-item">Selection</li> -->
+                <li class="nav-item">Prediksi</li>
+            </ul>
+        </nav>
+        <div class="content">
+            <!-- Start file upload -->
+            <section class="section active">
+                <h1 style="font-size: 32px; text-align: center;">Klasifikasi Naïve Bayes Classifier </h1>
+                <div class="section-input-file">
+                    
+                    <h2 style="font-size: 32px; margin-bottom: 20px;">File Upload</h2>
+                    <p style="margin-bottom: 20px;">You can add files here</p>
+                    <form action="">
+                        <div class="input-wrapper">
+                            <label for="input_file">Choose File</label>
+                            <input type="file" name="input_file" id="input_file" class="input-file"
+                                accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                        </div>
+                    </form>
+                    <span style="font-size: 12px; margin-top: 10px;">
+                        Note : <span style="color: red;">row one must be header table</span>
+                    </span>
+                </div>
+            </section>
+            <!-- End file upload -->
+
+            <!-- Start read file upload -->
+            <section class="section">
+                <div class="read-file">
+                    <table id="my_table" class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>Jenis kelamin</th>
+                                <th>Status</th>
+                                <th>Usia</th>
+                                <th>Pekerjaan</th>
+                                <th>Pendapatan pertahun</th>
+                                <th>Produk</th>
+                                <th>Label</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in data %}
+                            <tr id="table_null">
+                                <td>{{ row.jenis_kelamin }}</td>
+                                <td>{{ row.status }}</td>
+                                <td>{{ row.usia }}</td>
+                                <td>{{ row.pekerjaan }}</td>
+                                <td>{{ row.pendapatan_pertahun }}</td>
+                                <td>{{ row.produk }}</td>
+                                <td>{{ row.label }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div id="excel_data"></div>
+                </div>
+            </section>
+            <!-- End read file upload -->
+
+            <!-- Start result data -->
+            <section class="section">
+                <div class="result-data">
+                    <div style="padding-top: 20px; padding-bottom: 20px;">
+                        <h4>Model Feature Selection</h4>
+                        <p>
+                            <span class="label-result">Support</span>
+                            :
+                            <span id="dimensi_x_train">{{ support }}</span>
+                        </p>
+                        <p>
+                            <span class="label-result">Ranking</span>
+                            :
+                            <span id="dimensi_x_train">{{ ranking }}</span>
+                        </p>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <div>
+                            <h4>Selection Feature</h4>
+                            <p>
+                                <span class="label-result">Dimensi dari X_train</span>
+                                :
+                                <span id="dimensi_x_train">{{ result1.result_X_train }}</span>
+                            </p>
+                            <p>
+                                <span class="label-result">Dimensi dari Y_train</span>
+                                :
+                                <span id="dimensi_y_train">{{ result1.result_Y_train }}</span>
+                            </p>
+                            <p>
+                                <span class="label-result">Dimensi dari X_test</span>
+                                :
+                                <span id="dimensi_x_test">{{ result1.result_X_test }}</span>
+                            </p>
+                            <p>
+                                <span class="label-result">Dimensi dari Y_test</span>
+                                :
+                                <span id="dimensi_y_test">{{ result1.result_Y_test }}</span>
+                            </p>
+                            <p>
+                                <span class="label-result">Accuracy Score</span>
+                                :
+                                <span id="accuracy_score">{{ result1.accuracy }}</span>
+                            </p>
+                        </div>
+                        <div>
+                            <h4>Not Selection Feature</h4>
+                            <p>
+                                <span class="label-result">Dimensi dari X_train</span>
+                                :
+                                <span id="dimensi_x_train">{{ result2.result_X_train }}</span>
+                            </p>
+                            <p>
+                                <span class="label-result">Dimensi dari Y_train</span>
+                                :
+                                <span id="dimensi_y_train">{{ result2.result_Y_train }}</span>
+                            </p>
+                            <p>
+                                <span class="label-result">Dimensi dari X_test</span>
+                                :
+                                <span id="dimensi_x_test">{{ result2.result_X_test }}</span>
+                            </p>
+                            <p>
+                                <span class="label-result">Dimensi dari Y_test</span>
+                                :
+                                <span id="dimensi_y_test">{{ result2.result_Y_test }}</span>
+                            </p>
+                            <p>
+                                <span class="label-result">Accuracy Score</span>
+                                :
+                                <span id="accuracy_score">{{ result2.accuracy }}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- End result data -->
+
+            <!-- Start selection data -->
+            <!-- <section class="section">
+                <div class="input-data-wrapper">
+                    <div class="input-data">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="selection" id="selection" value="selection">
+                            <div>
+                                <label for="jenis_kelamin">Jenis Kelamin : </label>
+                                <input type="text" name="jenis_kelamin" id="jenis_kelamin">
+                            </div>
+                            <div>
+                                <label for="status">Status : </label>
+                                <input type="text" name="status" id="status">
+                            </div>
+                            <div>
+                                <label for="pendapatan_pertahun">Pendapatan Pertahun : </label>
+                                <input type="text" name="pendapatan_pertahun" id="pendapatan_pertahun">
+                            </div>
+                            <button class="btn-add">SUMBIT</button>
+                        </form>
+                    </div> -->
+                    <!-- Table -->
+                    <!-- <table id="my_table" class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>Jenis kelamin</th>
+                                <th>Status</th>
+                                <th>Pendapatan pertahun</th>
+                                <th>Label</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if have_data and selection %}
+                            {% for row in data_predik %}
+                            <tr id="table_null">
+                                <td>{{ row.jenis_kelamin }}</td>
+                                <td>{{ row.status }}</td>
+                                <td>{{ row.pendapatan_pertahun }}</td>
+                                <td>{{ row.label }}</td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr id="table_null">
+                                <td colspan="4">
+                                    Tidak ada data
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </section> -->
+            <!-- End selection data -->
+
+            <!-- Start not selection data -->
+            <section class="section">
+                    
+                <div class="input-data-wrapper">
+                    <img style="width: 600px; height: 400px; " class="center" alt="Image description"src="{% static 'Tanpa_judul.jpg' %}"/>
+                    <br>
+                    <div class="input-data">
+                        <form method="POST">
+                            {% csrf_token %}
+                            
+                            <input type="hidden" name="selection" id="selection" value="not_selection">
+                            <div>
+                                
+                                <label for="jenis_kelamin">Jenis Kelamin : </label>
+                                <input type="text" name="jenis_kelamin" id="jenis_kelamin">
+                            </div>
+                            <div>
+                                <label for="status">Status : </label>
+                                <input type="text" name="status" id="status">
+                            </div>
+                            <div>
+                                <label for="usia">Usia : </label>
+                                <input type="text" name="usia" id="usia">
+                            </div>
+                            <div>
+                                <label for="pekerjaan">Pekerjaan : </label>
+                                <input type="text" name="pekerjaan" id="pekerjaan">
+                            </div>
+                            <div>
+                                <label for="pendapatan_pertahun">Pendapatan Pertahun : </label>
+                                <input type="text" name="pendapatan_pertahun" id="pendapatan_pertahun">
+                            </div>
+                            <div>
+                                <label for="produk">Produk : </label>
+                                <input type="text" name="produk" id="produk">
+                            </div>
+                            <button class="btn-add">SUMBIT</button>
+                        </form>
+                    </div>
+                    <!-- Table -->
+                    <table id="my_table" class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>Jenis kelamin</th>
+                                <th>Status</th>
+                                <th>Usia</th>
+                                <th>Pekerjaan</th>
+                                <th>Pendapatan pertahun</th>
+                                <th>Produk</th>
+                                <th>Label</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if have_data and not selection %}
+                            {% for row in data_predik %}
+                            <tr id="table_null">
+                                <td>{{ row.jenis_kelamin }}</td>
+                                <td>{{ row.status }}</td>
+                                <td>{{ row.usia }}</td>
+                                <td>{{ row.pekerjaan }}</td>
+                                <td>{{ row.pendapatan_pertahun }}</td>
+                                <td>{{ row.produk }}</td>
+                                <td>{{ row.label }}</td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr id="table_null">
+                                <td colspan="7">
+                                    Tidak ada data
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <!-- End not selection data -->
+        </div>
+    </main>
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="{% static 'js/scripts.js' %}"></script>
+    <script>
+        /**
+         * Function for selection or not selection nav and section
+         * I put the script here so that it can read variables from views
+         */
+        let selection = '{{ selection }}';
+        console.log(selection)
+        if (selection === 'True') {
+            $(".nav-item").removeClass("active")
+            $(".nav-item:nth-child(4)").addClass("active")
+            $(".section").removeClass("active")
+            $(".section:nth-child(4)").addClass("active")
+        } else if (selection === 'False') {
+            $(".nav-item").removeClass("active")
+            $(".nav-item:nth-child(5)").addClass("active")
+            $(".section").removeClass("active")
+            $(".section:nth-child(5)").addClass("active")
+        }
+    </script>
+</body>
+
+</html>
